@@ -45,7 +45,7 @@ public class BotManager {
 			bot.connect(host,port);
 		} catch (NickAlreadyInUseException e) {}
 		
-		if (identMethod != null) identMethod.ident();
+		if (identMethod != null) identMethod.ident(this,bot);
 		
 		bots.add(bot);
 		return bot;
