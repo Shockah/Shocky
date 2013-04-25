@@ -18,7 +18,7 @@ public class Reflection {
 	public static <T> void setPrivateValue(Class<? super T> cls, String fieldName, T instance, Object value) throws IllegalArgumentException,IllegalAccessException,NoSuchFieldException,SecurityException {
 		getField(cls,fieldName).set(instance,value);
 	}
-	@SuppressWarnings("unchecked") public static <T> T getPrivateValue(Class<?> cls, String fieldName, Object instance) throws IllegalArgumentException,IllegalAccessException,NoSuchFieldException,SecurityException {
+	public static <T> T getPrivateValue(Class<?> cls, String fieldName, Object instance) throws IllegalArgumentException,IllegalAccessException,NoSuchFieldException,SecurityException {
 		return (T)getField(cls,fieldName).get(instance);
 	}
 	
@@ -27,7 +27,7 @@ public class Reflection {
 		method.setAccessible(true);
 		return method;
 	}
-	@SuppressWarnings("unchecked") public static <T> T invokePrivateMethod(Method method, Object instance, Object... arguments) throws IllegalAccessException,IllegalArgumentException,InvocationTargetException {
+	public static <T> T invokePrivateMethod(Method method, Object instance, Object... arguments) throws IllegalAccessException,IllegalArgumentException,InvocationTargetException {
 		return (T)method.invoke(instance,arguments);
 	}
 	
