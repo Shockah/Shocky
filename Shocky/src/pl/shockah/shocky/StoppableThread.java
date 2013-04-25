@@ -1,7 +1,7 @@
 package pl.shockah.shocky;
 
 public abstract class StoppableThread extends Thread {
-	volatile boolean running = false;
+	protected volatile boolean running = false;
 	
 	public final void run() {
 		running = true;

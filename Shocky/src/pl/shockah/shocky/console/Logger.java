@@ -1,4 +1,4 @@
-package pl.shockah.shocky;
+package pl.shockah.shocky.console;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

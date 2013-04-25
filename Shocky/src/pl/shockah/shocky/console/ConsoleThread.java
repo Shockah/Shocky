@@ -1,5 +1,6 @@
-package pl.shockah.shocky;
+package pl.shockah.shocky.console;
 
+import pl.shockah.shocky.StoppableThread;
 import com.googlecode.lanterna.TerminalFacade;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.input.Key.Kind;
@@ -68,9 +69,12 @@ public class ConsoleThread extends StoppableThread {
 			String input = tih.toString();
 			sw.drawString(0,screen.getTerminalSize().getRows()-1,input);
 			
-			//FIXME: fix cursor blinking
 			screen.setCursorPosition(tih.getPosition(),screen.getTerminalSize().getRows()-1);
 			screen.refresh();
+			
+			try {
+				Thread.sleep(10);
+			} catch (Exception e) {}
 		}
 		screen.stopScreen();
 	}
