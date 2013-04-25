@@ -45,6 +45,7 @@ public class ConsoleThread extends StoppableThread {
 			} else if (key.getKind() == Kind.ArrowRight) {
 				pos = Math.min(pos+1,sb.length());
 			} else if (key.getKind() == Kind.NormalKey) {
+				if (key.isCtrlPressed() || key.isAltPressed()) return;
 				sb.replace(pos,pos,""+key.getCharacter());
 				pos++;
 			}
@@ -55,7 +56,7 @@ public class ConsoleThread extends StoppableThread {
 		Screen screen = TerminalFacade.createScreen();
 		if (screen == null) return;
 		
-		setPriority(Thread.NORM_PRIORITY-1);
+		setPriority((Thread.NORM_PRIORITY+Thread.MIN_PRIORITY)/2);
 		ScreenWriter sw = new ScreenWriter(screen);
 		
 		TextInputHandler tih = new TextInputHandler();
@@ -63,8 +64,8 @@ public class ConsoleThread extends StoppableThread {
 		while (running) {
 			sw.fillScreen(' ');
 			
-			Key key = screen.readInput();
-			if (key != null) tih.handle(key);
+			Key key;
+			while ((key = screen.readInput()) != null) tih.handle(key);
 			
 			String input = tih.toString();
 			sw.drawString(0,screen.getTerminalSize().getRows()-1,input);
