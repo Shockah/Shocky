@@ -43,7 +43,7 @@ public class Logger {
 	}
 	protected void print(Object o, boolean split) {
 		if (split) {
-			String[] spl = o.toString().split("\\r\\n?");
+			String[] spl = o.toString().split("\\r?\\n");
 			for (int i = 0; i < spl.length; i++) {
 				if (i != 0) printLine();
 				print(o,false);
