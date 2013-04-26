@@ -1,5 +1,7 @@
 package pl.shockah.shocky.console;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.input.Key.Kind;
 
@@ -54,6 +56,19 @@ public class TextInputHandler {
 			pos = Math.max(pos-1,0);;
 		} else if (key.getKind() == Kind.ArrowRight) {
 			pos = Math.min(pos+1,sb.length());
+		} else if (key.getKind() == Kind.NormalKey && key.getCharacter() == 'v' && key.isCtrlPressed()) {
+			try {
+				String old = toString();
+				int oldPos = pos;
+				
+				String data = (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+				sb.replace(pos,pos,data);
+				pos += data.length();
+				if (textInputFilter != null && !textInputFilter.acceptText(toString())) {
+					sb = new StringBuilder(old);
+					pos = oldPos;
+				}
+			} catch (Exception e) {}
 		} else if (key.getKind() == Kind.NormalKey) {
 			if (key.isCtrlPressed() || key.isAltPressed()) return;
 			String old = toString();
