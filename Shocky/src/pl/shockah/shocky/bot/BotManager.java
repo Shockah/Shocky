@@ -3,6 +3,7 @@ package pl.shockah.shocky.bot;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import org.json.JSONObject;
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.exception.IrcException;
@@ -17,6 +18,7 @@ public class BotManager {
 	private String name;
 	private int channelLimit = 25;
 	private List<PircBotX> bots = Util.syncedList(PircBotX.class);
+	private JSONObject jIdent = null;
 	
 	public BotManager(String name, String host) {this(name,host,6667);}
 	public BotManager(String name, String host, int port) {this(name,host,port,null);}
@@ -25,6 +27,10 @@ public class BotManager {
 		this.host = host;
 		this.port = port;
 		this.identMethod = identMethod;
+	}
+	
+	public void setIdentDocument(JSONObject jIdent) {
+		this.jIdent = jIdent;
 	}
 	
 	public List<PircBotX> getBots() {
@@ -45,7 +51,7 @@ public class BotManager {
 			bot.connect(host,port);
 		} catch (NickAlreadyInUseException e) {}
 		
-		if (identMethod != null) identMethod.ident(this,bot);
+		if (identMethod != null) identMethod.ident(this,bot,jIdent);
 		
 		bots.add(bot);
 		return bot;

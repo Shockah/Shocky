@@ -1,0 +1,18 @@
+Database 'shocky': {
+	Collection 'servers': [
+		{
+			"name": "esper",
+			"host": "irc.esper.net",
+			"botname": "Shocky",
+			"ident": {
+				"method": "NickServ",
+				"account": "Shocky",
+				"password": "somepassword"
+			},
+			"channels": [
+				"#shocky",
+				"#risucraft"
+			]
+		}
+	]
+}

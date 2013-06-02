@@ -1,13 +1,13 @@
 package pl.shockah.shocky;
 
-import java.io.File;
-import pl.shockah.Config;
+import pl.shockah.shocky.bot.ServerManager;
 import pl.shockah.shocky.console.ConsoleThread;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 
 public class Main {
 	public static String[] args;
+	public static ServerManager manager;
 	
 	public static Mongo mongo;
 	public static DB db;
@@ -17,15 +17,8 @@ public class Main {
 		main();
 	}
 	public static void main() {
-		try {
-			File f = new File("config.cfg");
-			if (f.exists()) {
-				Config cfg = new Config();
-				cfg.load(f);
-				
-				if (!cfg.exists("mongo->host") || !cfg.exists("mongo->db")) new ConsoleThread(true).start();
-				else new ConsoleThread().start();
-			} else new ConsoleThread(true).start();
-		} catch (Exception e) {e.printStackTrace();}
+		new ConsoleThread().start();
+		System.out.println("asdf");
+		System.out.println("ghjk");
 	}
 }
