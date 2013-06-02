@@ -19,6 +19,8 @@ public class Main {
 	public static void main() {
 		new ConsoleThread().start();
 		System.out.println("asdf");
-		System.out.println("ghjk");
+		try {
+			throw new RuntimeException("just testing");
+		} catch (Throwable t) {t.printStackTrace();}
 	}
 }

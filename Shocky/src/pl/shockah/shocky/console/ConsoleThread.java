@@ -8,6 +8,8 @@ import pl.shockah.shocky.StoppableThread;
 import pl.shockah.shocky.console.tabs.ConsoleTab;
 import pl.shockah.shocky.console.tabs.ConsoleTabOutput;
 import com.googlecode.lanterna.TerminalFacade;
+import com.googlecode.lanterna.input.Key;
+import com.googlecode.lanterna.input.Key.Kind;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.ScreenWriter;
 import com.googlecode.lanterna.terminal.Terminal.Color;
@@ -17,9 +19,19 @@ public class ConsoleThread extends StoppableThread {
 		psSystemOut = System.out,
 		psSystemErr = System.err;
 	
+	public final ITextInputIntercept tii = new ITextInputIntercept(){
+		public boolean interceptTextInput(Key key) {
+			if (key.getKind() == Kind.PageUp || key.getKind() == Kind.PageDown) {
+				if (key.getKind() == Kind.PageUp) tabs.selectPrevious(); else tabs.selectNext();
+				return true;
+			}
+			return false;
+		}
+	};
 	public final Screen screen = TerminalFacade.createScreen();
 	public final ScreenWriter writer = new ScreenWriter(screen);
-	public SelectionList<ConsoleTab> tabs = new SelectionList<ConsoleTab>(Collections.synchronizedList(new LinkedList<ConsoleTab>()));
+	public final SelectionList<ConsoleTab> tabs = new SelectionList<ConsoleTab>(Collections.synchronizedList(new LinkedList<ConsoleTab>()));
+	protected TextInputThread tit;
 	
 	public ConsoleThread() {
 		ConsoleTabOutput tab;
@@ -29,6 +41,9 @@ public class ConsoleThread extends StoppableThread {
 		
 		tabs.add(tab = new ConsoleTabOutput(this,"Errors"));
 		System.setErr(new ConsolePrintStreamWrapper(this,System.err,tab));
+		
+		tit = new TextInputThread(this,null,null,tii);
+		tit.start();
 	}
 	
 	public void onRun() {
@@ -63,6 +78,9 @@ public class ConsoleThread extends StoppableThread {
 			} catch (Exception e) {}
 		}
 		screen.stopScreen();
+	}
+	public void onEnd() {
+		tit.end();
 	}
 	
 	private int drawTab(ConsoleTab tab, int x) {

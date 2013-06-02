@@ -71,4 +71,23 @@ public class SelectionList<E> implements List<E> {
 	public E getSelected() {
 		return list.get(selected);
 	}
+	
+	public E selectNext() {
+		selected++;
+		if (selected > size()-1) selected = 0;
+		return getSelected();
+	}
+	public E selectPrevious() {
+		selected--;
+		if (selected < 0) selected = size()-1;
+		return getSelected();
+	}
+	public void select(E e) {
+		selectAt(indexOf(e));
+	}
+	public void selectAt(int index) {
+		selected = index;
+		if (selected < 0) selected = 0;
+		if (selected > size()-1) selected = size()-1;
+	}
 }

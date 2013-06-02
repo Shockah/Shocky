@@ -9,11 +9,13 @@ public abstract class StoppableThread extends Thread {
 		running = false;
 	}
 	public abstract void onRun();
+	public void onEnd() {}
 	
-	public boolean isRunning() {
+	public final boolean isRunning() {
 		return running;
 	}
-	public void end() {
+	public final void end() {
+		onEnd();
 		running = false;
 	}
 }
