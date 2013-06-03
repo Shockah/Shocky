@@ -70,11 +70,13 @@ public class Main {
 		cps.println();
 		
 		ct.tit.tih.clear();
+		tab.password = true;
 		cps.print("Password: ");
 		input = tiwl.get();
 		for (int i = 0; i < input.length(); i++) cps.print('*');
 		cfg.set("pass",input);
 		cps.println();
+		tab.password = false;
 		
 		ct.tit.end();
 		ct.setupTextInputThread();

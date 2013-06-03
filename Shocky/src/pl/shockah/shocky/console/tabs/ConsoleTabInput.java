@@ -6,6 +6,8 @@ import pl.shockah.shocky.console.ConsoleThread;
 import com.googlecode.lanterna.terminal.TerminalSize;
 
 public class ConsoleTabInput extends ConsoleTabOutput {
+	public boolean password = false;
+	
 	public ConsoleTabInput(ConsoleThread ct, String title) {
 		super(ct,title);
 	}
@@ -22,7 +24,10 @@ public class ConsoleTabInput extends ConsoleTabOutput {
 		}
 		
 		for (int i = 0; i < size.getColumns(); i++) ct.writer.drawString(i,size.getRows()-2,"=");
-		ct.writer.drawString(0,size.getRows()-1,ct.tit.tih.toString());
+		if (password) {
+			String input = ct.tit.tih.toString();
+			for (int i = 0; i < input.length(); i++) ct.writer.drawString(i,size.getRows()-1,"*");
+		} else ct.writer.drawString(0,size.getRows()-1,ct.tit.tih.toString());
 		ct.screen.setCursorPosition(ct.tit.tih.getPosition(),size.getRows()-1);
 	}
 }
