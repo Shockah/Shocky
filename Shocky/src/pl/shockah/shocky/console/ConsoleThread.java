@@ -31,17 +31,21 @@ public class ConsoleThread extends StoppableThread {
 	public final Screen screen = TerminalFacade.createScreen();
 	public final ScreenWriter writer = new ScreenWriter(screen);
 	public final SelectionList<ConsoleTab> tabs = new SelectionList<ConsoleTab>(Collections.synchronizedList(new LinkedList<ConsoleTab>()));
-	protected TextInputThread tit;
+	public TextInputThread tit;
 	
 	public ConsoleThread() {
 		ConsoleTabOutput tab;
 		
 		tabs.add(tab = new ConsoleTabOutput(this,"Output"));
-		System.setOut(new ConsolePrintStreamWrapper(this,System.out,tab));
+		System.setOut(new ConsolePrintStream(this,System.out,tab));
 		
 		tabs.add(tab = new ConsoleTabOutput(this,"Errors"));
-		System.setErr(new ConsolePrintStreamWrapper(this,System.err,tab));
+		System.setErr(new ConsolePrintStream(this,System.err,tab));
 		
+		setupTextInputThread();
+	}
+	
+	public void setupTextInputThread() {
 		tit = new TextInputThread(this,null,null,tii);
 		tit.start();
 	}
@@ -85,8 +89,8 @@ public class ConsoleThread extends StoppableThread {
 	
 	private int drawTab(ConsoleTab tab, int x) {
 		String title = tab.getTitle();
-		writer.drawString(x,0,"# "+title+" #");
-		for (int i = 0; i < title.length()+4; i++) writer.drawString(x+i,1,"#");
+		writer.drawString(x,0,"| "+title+" |");
+		for (int i = 0; i < title.length()+4; i++) writer.drawString(x+i,1,"=");
 		return title.length()+3;
 	}
 }

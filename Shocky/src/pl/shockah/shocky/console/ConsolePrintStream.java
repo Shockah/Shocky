@@ -2,14 +2,21 @@ package pl.shockah.shocky.console;
 
 import java.io.PrintStream;
 import java.util.Locale;
+import pl.shockah.ZeroOutputStream;
 import pl.shockah.shocky.console.tabs.ConsoleTabOutput;
 
-public class ConsolePrintStreamWrapper extends PrintStream {
+public class ConsolePrintStream extends PrintStream {
 	protected final ConsoleThread ct;
 	protected final PrintStream ps;
 	protected final ConsoleTabOutput tab;
 	
-	public ConsolePrintStreamWrapper(ConsoleThread ct, PrintStream ps, ConsoleTabOutput tab) {
+	public ConsolePrintStream(ConsoleThread ct, ConsoleTabOutput tab) {
+		super(new ZeroOutputStream());
+		this.ct = ct;
+		ps = null;
+		this.tab = tab;
+	}
+	public ConsolePrintStream(ConsoleThread ct, PrintStream ps, ConsoleTabOutput tab) {
 		super(ps);
 		this.ct = ct;
 		this.ps = ps;
@@ -29,7 +36,7 @@ public class ConsolePrintStreamWrapper extends PrintStream {
 	}
 	
 	public PrintStream append(char c) {
-		ps.append(c);
+		if (ps != null) ps.append(c);
 		checkNextLine();
 		tab.sb.append(c);
 		return this;
@@ -40,17 +47,17 @@ public class ConsolePrintStreamWrapper extends PrintStream {
 	}
 	public PrintStream append(CharSequence csq, int start, int end) {ps.append(csq,start,end); return append(csq.subSequence(start,end));}
 	
-	public boolean checkError() {ps.checkError(); return ps.checkError();}
-	public void close() {ps.close(); ps.close();}
-	public void flush() {ps.flush(); ps.flush();}
+	public boolean checkError() {if (ps != null) return ps.checkError(); return false;}
+	public void close() {if (ps != null) ps.close();}
+	public void flush() {if (ps != null) ps.flush();}
 	
 	public PrintStream format(Locale l, String format, Object... args) {
-		ps.format(l,format,args);
+		if (ps != null) ps.format(l,format,args);
 		append(String.format(l,format,args));
 		return this;
 	}
 	public PrintStream format(String format, Object... args) {
-		ps.format(format,args);
+		if (ps != null) ps.format(format,args);
 		append(String.format(format,args));
 		return this;
 	}
@@ -65,10 +72,10 @@ public class ConsolePrintStreamWrapper extends PrintStream {
 	public void print(Object obj) {append(String.valueOf(obj));}
 	public void print(String s) {append(s == null ? "null" : s);}
 	
-	public PrintStream printf(Locale l, String format, Object... args) {ps.printf(l,format,args); return format(l,format,args);}
-	public PrintStream printf(String format, Object... args) {ps.printf(format,args); return format(format,args);}
+	public PrintStream printf(Locale l, String format, Object... args) {return format(l,format,args);}
+	public PrintStream printf(String format, Object... args) {return format(format,args);}
 	
-	public void println() {ps.println(); nextLine();}
+	public void println() {if (ps != null) ps.println(); nextLine();}
 	public void println(boolean x) {print(x); println();}
 	public void println(char x) {print(x); println();}
 	public void println(char[] x) {print(x); println();}

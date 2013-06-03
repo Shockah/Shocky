@@ -9,7 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -60,8 +61,8 @@ public class HTTPQuery {
 		os.write(bytes);
 	}
 	
-	public ArrayList<String> read() throws UnsupportedEncodingException,IOException {
-		ArrayList<String> ret = new ArrayList<String>();
+	public List<String> read() throws UnsupportedEncodingException,IOException {
+		List<String> ret = new LinkedList<String>();
 		BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream(),"UTF-8"));
 		String line;
 		while ((line = br.readLine()) != null) ret.add(line);
@@ -70,7 +71,7 @@ public class HTTPQuery {
 		return ret;
 	}
 	public String readWhole() throws UnsupportedEncodingException,IOException {
-		ArrayList<String> lines = read();
+		List<String> lines = read();
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < lines.size(); i++) {
 			if (i != 0) sb.append('\n');
@@ -81,7 +82,7 @@ public class HTTPQuery {
 	
 	public static String parseArgs(Map<String,String> args) {
 		StringBuilder sb = new StringBuilder();
-		for (Entry<String, String> pair : args.entrySet()) {
+		for (Entry<String,String> pair : args.entrySet()) {
 			if (sb.length() != 0) sb.append('&');
 			try {
 				sb.append(URLEncoder.encode(pair.getKey()+'='+pair.getValue(),"UTF-8"));

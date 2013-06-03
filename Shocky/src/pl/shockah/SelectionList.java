@@ -44,7 +44,7 @@ public class SelectionList<E> implements List<E> {
 		return true;
 	}
 	public E remove(int index) {
-		if (index < selected) {
+		if (index <= selected) {
 			selected--;
 			if (selected < 0) selected++;
 		}

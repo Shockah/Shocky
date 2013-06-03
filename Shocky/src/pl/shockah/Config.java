@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import pl.shockah.FileLine;
 
 public class Config {
 	private HashMap<String,String> mapValues = new HashMap<String,String>();
@@ -127,7 +127,7 @@ public class Config {
 		load(FileLine.read(file));
 		return this;
 	}
-	public Config load(ArrayList<String> lines) {
+	public Config load(List<String> lines) {
 		for (String line : lines) {
 			line = line.trim();
 			if (line.isEmpty()) continue;
@@ -141,8 +141,8 @@ public class Config {
 		return this;
 	}
 	
-	public ArrayList<String> save() {
-		ArrayList<String> lines = new ArrayList<String>();
+	public List<String> save() {
+		List<String> lines = new LinkedList<String>();
 		saveSubconfig(lines,"");
 		Collections.sort(lines);
 		return lines;
@@ -151,7 +151,7 @@ public class Config {
 		FileLine.write(file,save());
 		return this;
 	}
-	protected void saveSubconfig(ArrayList<String> lines, String path) {
+	protected void saveSubconfig(List<String> lines, String path) {
 		Iterator<Entry<String,Config>> it1 = mapSubconfigs.entrySet().iterator();
 		while (it1.hasNext()) {
 			Entry<String,Config> pair = it1.next();

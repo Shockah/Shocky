@@ -11,11 +11,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FileLine {
-	public static ArrayList<String> read(InputStream is) throws UnsupportedEncodingException,IOException {
-		ArrayList<String> ret = new ArrayList<String>();
+	public static List<String> read(InputStream is) throws UnsupportedEncodingException,IOException {
+		List<String> ret = new LinkedList<String>();
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
 		String line; while ((line = br.readLine()) != null) ret.add(line);
@@ -23,8 +24,8 @@ public class FileLine {
 		
 		return ret;
 	}
-	public static ArrayList<String> read(File file) throws UnsupportedEncodingException,IOException {
-		if (!file.exists()) return new ArrayList<String>();
+	public static List<String> read(File file) throws UnsupportedEncodingException,IOException {
+		if (!file.exists()) return new LinkedList<String>();
 		return read(new FileInputStream(file));
 	}
 	public static String readString(InputStream is) throws UnsupportedEncodingException,IOException {
@@ -45,7 +46,7 @@ public class FileLine {
 		} catch (FileNotFoundException e) {return "";}
 	}
 	
-	public static void write(File file, ArrayList<String> lines) throws IOException {
+	public static void write(File file, List<String> lines) throws IOException {
 		if (file.exists()) file.delete();
 		file.createNewFile();
 		
