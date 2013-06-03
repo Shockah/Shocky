@@ -48,22 +48,43 @@ public class Main {
 		ct.tabs.add(tab);
 		ct.tabs.select(tab);
 		ct.tit.start();
-		ct.tit.tih.clear();
 		
 		Config cfg = new Config();
 		ConsolePrintStream cps = new ConsolePrintStream(ct,tab);
 		cps.println("---> MongoDB config <---");
 		String input;
 		
-		cps.print("Host: ");
+		ct.tit.tih.clear();
+		cps.print("Host (leave blank for 'localhost'): ");
 		input = tiwl.get();
-		cfg.set("host",input.isEmpty() ? "localhost" : input);
+		if (input.isEmpty()) input = "localhost";
+		cps.print(input);
+		cfg.set("host",input);
+		cps.println();
+		
+		ct.tit.tih.clear();
+		cps.print("User: ");
+		input = tiwl.get();
+		cps.print(input);
+		cfg.set("user",input);
+		cps.println();
+		
+		ct.tit.tih.clear();
+		cps.print("Password: ");
+		input = tiwl.get();
+		for (int i = 0; i < input.length(); i++) cps.print('*');
+		cfg.set("pass",input);
+		cps.println();
 		
 		ct.tit.end();
 		ct.setupTextInputThread();
 		cps.close();
 		ct.tabs.remove(tab);
+		ct.tabs.selectAt(0);
 		
+		try {
+			System.out.println(JSONUtil.toJSONObject(cfg).toString(2));
+		} catch (Exception e) {e.printStackTrace();}
 		return cfg;
 	}
 }

@@ -9,6 +9,7 @@ public class ConsolePrintStream extends PrintStream {
 	protected final ConsoleThread ct;
 	protected final PrintStream ps;
 	protected final ConsoleTabOutput tab;
+	protected char lastChar = 0;
 	
 	public ConsolePrintStream(ConsoleThread ct, ConsoleTabOutput tab) {
 		super(new ZeroOutputStream());
@@ -37,8 +38,14 @@ public class ConsolePrintStream extends PrintStream {
 	
 	public PrintStream append(char c) {
 		if (ps != null) ps.append(c);
+		if ((c == 13 || c == 10) && ((lastChar != 13 && lastChar != 10) || ((lastChar == 13 || lastChar == 10) && c != lastChar))) {
+			nextLine();
+			lastChar = c;
+			return this;
+		}
 		checkNextLine();
 		tab.sb.append(c);
+		lastChar = c;
 		return this;
 	}
 	public PrintStream append(CharSequence csq) {
