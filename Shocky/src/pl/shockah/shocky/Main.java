@@ -1,22 +1,27 @@
 package pl.shockah.shocky;
 
 import java.io.File;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import pl.shockah.Config;
+import pl.shockah.shocky.bot.BotManager;
 import pl.shockah.shocky.bot.ServerManager;
+import pl.shockah.shocky.bot.ident.IdentMethodManager;
 import pl.shockah.shocky.console.ConsolePrintStream;
 import pl.shockah.shocky.console.ConsoleThread;
 import pl.shockah.shocky.console.TextInputThread;
 import pl.shockah.shocky.console.TextInputWaitingListener;
 import pl.shockah.shocky.console.tabs.ConsoleTabInput;
 import com.mongodb.DB;
-import com.mongodb.Mongo;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
 
 public class Main {
 	public static String[] args;
 	public static ConsoleThread ct;
 	public static ServerManager manager;
 	
-	public static Mongo mongo;
+	public static MongoClient mongo;
 	public static DB db;
 	
 	public static void main(String[] args) {
@@ -24,19 +29,63 @@ public class Main {
 		main();
 	}
 	public static void main() {
-		(ct = new ConsoleThread()).start();
-		
-		File f = new File("mongo.cfg");
-		if (!f.exists()) {
-			runConfigWizard();
-			return;
-		}
-		
 		try {
-			Config cfg = new Config();
+			(ct = new ConsoleThread()).start();
+			Config cfg = checkConfig();
+			cfg.save(new File("mongo.cfg"));
+			
+			if (cfg.exists("port")) {
+				mongo = new MongoClient(cfg.getString("host"),cfg.getInt("port"));
+			} else {
+				mongo = new MongoClient(cfg.getString("host"));
+			}
+			db = mongo.getDB(cfg.getString("db"));
+			if (!cfg.getString("user").isEmpty()) {
+				if (!db.authenticate(cfg.getString("user"),cfg.getString("pass").toCharArray())) {
+					throw new RuntimeException("Couldn't authenticate into database.");
+				}
+			}
+			
+			manager = new ServerManager();
+			new Thread(){
+				public void run() {
+					try {
+						DBCollection col = db.getCollection("servers");
+						JSONArray jServers = JSONUtil.toJSONArray(col.find());
+						for (int i = 0; i < jServers.length(); i++) {
+							JSONObject jServer = jServers.getJSONObject(i);
+							JSONObject jIdent = jServer.has("ident") ? jServer.getJSONObject("ident") : null;
+							BotManager botManager = new BotManager(
+									jServer.getString("botname"),
+									jServer.getString("host"),
+									jServer.has("port") ? jServer.getInt("port") : 6667,
+									jIdent != null ? IdentMethodManager.getMethod(jIdent.getString("method")) : null
+							);
+							if (jIdent != null) botManager.setIdentDocument(jIdent);
+							Main.manager.register(botManager);
+							
+							if (jServer.has("channels")) {
+								JSONArray jChannels = jServer.getJSONArray("channels");
+								for (int j = 0; j < jChannels.length(); j++) botManager.joinChannel(jChannels.getString(j));
+							}
+							if (botManager.getBots().isEmpty()) botManager.connectNew();
+						}
+					} catch (Exception e) {e.printStackTrace();}
+				}
+			}.start();
+		} catch (Exception e) {e.printStackTrace();}
+	}
+	
+	public static Config checkConfig() {
+		File f = new File("mongo.cfg");
+		if (!f.exists()) return runConfigWizard();;
+		
+		Config cfg = new Config();
+		try {
 			cfg.load(f);
-			if (!cfg.exists("host")) runConfigWizard();;
-		} catch (Exception e) {runConfigWizard();}
+			if (!cfg.exists("host")) return runConfigWizard();
+		} catch (Exception e) {return runConfigWizard();}
+		return cfg;
 	}
 	
 	public static Config runConfigWizard() {
@@ -63,20 +112,38 @@ public class Main {
 		cps.println();
 		
 		ct.tit.tih.clear();
+		cps.print("Database (leave blank for 'shocky'): ");
+		input = tiwl.get();
+		if (input.isEmpty()) input = "shocky";
+		cps.print(input);
+		cfg.set("db",input);
+		cps.println();
+		
+		ct.tit.tih.clear();
+		cps.print("Port (leave blank for default): ");
+		input = tiwl.get();
+		if (input.isEmpty()) input = "<default>";
+		cps.print(input);
+		if (!input.equals("<default>")) cfg.set("port",Integer.parseInt(input));
+		cps.println();
+		
+		ct.tit.tih.clear();
 		cps.print("User: ");
 		input = tiwl.get();
 		cps.print(input);
 		cfg.set("user",input);
 		cps.println();
 		
-		ct.tit.tih.clear();
-		tab.password = true;
-		cps.print("Password: ");
-		input = tiwl.get();
-		for (int i = 0; i < input.length(); i++) cps.print('*');
-		cfg.set("pass",input);
-		cps.println();
-		tab.password = false;
+		if (!input.isEmpty()) {
+			ct.tit.tih.clear();
+			tab.password = true;
+			cps.print("Password: ");
+			input = tiwl.get();
+			for (int i = 0; i < input.length(); i++) cps.print('*');
+			cfg.set("pass",input);
+			cps.println();
+			tab.password = false;
+		}
 		
 		ct.tit.end();
 		ct.setupTextInputThread();

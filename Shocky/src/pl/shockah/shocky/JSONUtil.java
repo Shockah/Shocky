@@ -1,7 +1,10 @@
 package pl.shockah.shocky;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import pl.shockah.Config;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 public final class JSONUtil {
 	public static JSONObject toJSONObject(Config cfg) {
@@ -19,5 +22,17 @@ public final class JSONUtil {
 			toJSONObject(cfg.getConfig(cfgKey),json2);
 			json.put(cfgKey,json2);
 		} catch (Exception e) {}
+	}
+	
+	public static JSONObject toJSONObject(DBObject doc) {
+		try {
+			return new JSONObject(doc.toString());
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	public static JSONArray toJSONArray(DBCursor cur) {
+		JSONArray json = new JSONArray();
+		while (cur.hasNext()) json.put(toJSONObject(cur.next()));
+		return json;
 	}
 }

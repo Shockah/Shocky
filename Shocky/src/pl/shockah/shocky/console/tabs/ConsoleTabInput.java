@@ -17,10 +17,12 @@ public class ConsoleTabInput extends ConsoleTabOutput {
 		int yy = size.getRows()-3;
 		if (sb.length() > 0) ct.writer.drawString(0,yy--,sb.toString());
 		
-		Iterator<String> it = ((LinkedList<String>)lines).descendingIterator();
+		while (lines.size() > 500) lines.remove(0);
+		LinkedList<String> rev = new LinkedList<String>(lines);
+		Iterator<String> it = rev.descendingIterator();
 		while (it.hasNext()) {
 			ct.writer.drawString(0,yy--,it.next());
-			if (yy < 0) break;
+			if (yy < 2) break;
 		}
 		
 		for (int i = 0; i < size.getColumns(); i++) ct.writer.drawString(i,size.getRows()-2,"=");
