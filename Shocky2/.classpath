@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="libs/lanterna-2.1.5.jar"/>
 	<classpathentry kind="lib" path="libs/json.jar"/>
 	<classpathentry kind="lib" path="libs/mongo-java-driver-2.11.1.jar"/>
+	<classpathentry kind="lib" path="libs/commons-lang3-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
